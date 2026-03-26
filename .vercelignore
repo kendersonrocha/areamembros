@@ -1,0 +1,34 @@
+# Vercel Ignore - arquivos que não devem ser enviados para a Vercel
+
+# Development
+node_modules
+.env
+.env.local
+.env.*.local
+
+# Backend local (não usado na Vercel)
+server/
+
+# Build files
+dist
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor
+.vscode
+.idea
+
+# Git
+.git
+.gitignore
+
+# Documentation (opcional - pode enviar se quiser)
+*.md
+!README.md
+
+# Others
+.DS_Store
+
+

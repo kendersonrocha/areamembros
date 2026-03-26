@@ -1,0 +1,124 @@
+// src/services/circleApi.ts
+const CIRCLE_API_BASE = 'https://app.circle.so/api/v1'
+const API_TOKEN = import.meta.env.VITE_CIRCLE_API_TOKEN
+const COMMUNITY_ID = import.meta.env.VITE_CIRCLE_COMMUNITY_ID
+
+interface CircleApiResponse<T> {
+  success: boolean
+  data: T
+  error?: string
+}
+
+// Headers padrão para requisições
+const getHeaders = () => ({
+  'Authorization': `Bearer ${API_TOKEN}`,
+  'Content-Type': 'application/json',
+})
+
+// Obter estatísticas da comunidade
+export async function getCommunityStats(): Promise<CircleApiResponse<{
+  members_count: number
+  posts_count: number
+  comments_count: number
+}>> {
+  try {
+    const response = await fetch(
+      `${CIRCLE_API_BASE}/community/${COMMUNITY_ID}/stats`,
+      {
+        headers: getHeaders(),
+      }
+    )
+    
+    if (!response.ok) {
+      throw new Error('Erro ao buscar estatísticas')
+    }
+    
+    const data = await response.json()
+    return { success: true, data }
+  } catch (error) {
+    console.error('Erro na API Circle:', error)
+    return {
+      success: false,
+      data: { members_count: 0, posts_count: 0, comments_count: 0 },
+      error: error instanceof Error ? error.message : 'Erro desconhecido'
+    }
+  }
+}
+
+// Obter posts recentes
+export async function getRecentPosts(limit = 10) {
+  try {
+    const response = await fetch(
+      `${CIRCLE_API_BASE}/posts?community_id=${COMMUNITY_ID}&per_page=${limit}`,
+      {
+        headers: getHeaders(),
+      }
+    )
+    
+    if (!response.ok) {
+      throw new Error('Erro ao buscar posts')
+    }
+    
+    const data = await response.json()
+    return { success: true, data }
+  } catch (error) {
+    console.error('Erro na API Circle:', error)
+    return {
+      success: false,
+      data: [],
+      error: error instanceof Error ? error.message : 'Erro desconhecido'
+    }
+  }
+}
+
+// Obter membros ativos
+export async function getActiveMembers(limit = 10) {
+  try {
+    const response = await fetch(
+      `${CIRCLE_API_BASE}/community_members?community_id=${COMMUNITY_ID}&per_page=${limit}&status=active`,
+      {
+        headers: getHeaders(),
+      }
+    )
+    
+    if (!response.ok) {
+      throw new Error('Erro ao buscar membros')
+    }
+    
+    const data = await response.json()
+    return { success: true, data }
+  } catch (error) {
+    console.error('Erro na API Circle:', error)
+    return {
+      success: false,
+      data: [],
+      error: error instanceof Error ? error.message : 'Erro desconhecido'
+    }
+  }
+}
+
+// Obter informações do usuário atual na comunidade
+export async function getCurrentMemberInfo(email: string) {
+  try {
+    const response = await fetch(
+      `${CIRCLE_API_BASE}/community_members?community_id=${COMMUNITY_ID}&email=${email}`,
+      {
+        headers: getHeaders(),
+      }
+    )
+    
+    if (!response.ok) {
+      throw new Error('Erro ao buscar informações do membro')
+    }
+    
+    const data = await response.json()
+    return { success: true, data }
+  } catch (error) {
+    console.error('Erro na API Circle:', error)
+    return {
+      success: false,
+      data: null,
+      error: error instanceof Error ? error.message : 'Erro desconhecido'
+    }
+  }
+}
